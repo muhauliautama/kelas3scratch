@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeQuest - Platform Pembelajaran Coding Interaktif</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF6B9D;
+            --secondary: #C06C84;
+            --accent: #F67280;
+            --success: #6BCF7F;
+            --warning: #FFB84D;
+            --danger: #FF6B6B;
+            --dark: #2C3E50;
+            --light: #F8F9FA;
+            --grid-bg: #FFF5F7;
+            --shadow: rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 350px 1fr 400px;
+            gap: 20px;
+            height: calc(100vh - 40px);
+        }
+
+        .panel {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 20px;
+            padding: 20px 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+        }
+
+        .logo-text h1 {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text p {
+            font-size: 14px;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .level-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, var(--grid-bg), white);
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid var(--primary);
+        }
+
+        .stat-box .label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-box .value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .section-title .icon {
+            font-size: 24px;
+        }
+
+        .blocks-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .blocks-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .blocks-container::-webkit-scrollbar-track {
+            background: var(--light);
+            border-radius: 10px;
+        }
+
+        .blocks-container::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .block-category {
+            margin-bottom: 20px;
+        }
+
+        .category-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .code-block {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            box-shadow: 0 4px 12px var(--shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .code-block:hover::before {
+            left: 100%;
+        }
+
+        .code-block:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px var(--shadow);
+        }
+
+        .code-block:active {
+            transform: scale(0.98);
+        }
+
+        .block-icon {
+            font-size: 20px;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .code-block.movement {
+            background: linear-gradient(135deg, #4FACFE, #00F2FE);
+        }
+
+        .code-block.action {
+            background: linear-gradient(135deg, #43E97B, #38F9D7);
+        }
+
+        .code-block.control {
+            background: linear-gradient(135deg, #FA709A, #FEE140);
+        }
+
+        .code-block.condition {
+            background: linear-gradient(135deg, #A8EDEA, #FED6E3);
+            color: var(--dark);
+        }
+
+        .workspace {
+            background: var(--grid-bg);
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 200px;
+            border: 3px dashed var(--primary);
+            position: relative;
+        }
+
+        .workspace-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-style: italic;
+            font-size: 15px;
+        }
+
+        .workspace-block {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            animation: blockAppear 0.3s ease-out;
+            border-left: 4px solid var(--primary);
+        }
+
+        @keyframes blockAppear {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .workspace-block .number {
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            color: var(--primary);
+            margin-right: 10px;
+        }
+
+        .workspace-block .text {
+            flex: 1;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .remove-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .remove-btn:hover {
+            background: #E74C3C;
+            transform: scale(1.05);
+        }
+
+        .game-canvas {
+            background: var(--grid-bg);
+            border-radius: 15px;
+            padding: 20px;
+            aspect-ratio: 1;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            gap: 4px;
+            box-shadow: inset 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .grid-cell {
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .grid-cell.player {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .grid-cell.goal {
+            background: linear-gradient(135deg, #FFD93D, #FFA400);
+            animation: glow 1.5s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 217, 61, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 217, 61, 0.8); }
+        }
+
+        .grid-cell.obstacle {
+            background: linear-gradient(135deg, #34495E, #2C3E50);
+        }
+
+        .grid-cell.path {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px var(--shadow);
+            font-family: 'Fredoka', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px var(--shadow);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--success), #4CAF50);
+            color: white;
+            grid-column: 1 / -1;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--warning), #FF9800);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #E74C3C);
+            color: white;
+        }
+
+        .level-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .level-btn {
+            padding: 12px;
+            border: 2px solid var(--primary);
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .level-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .level-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-color: transparent;
+        }
+
+        .level-btn.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .level-btn .stars {
+            font-size: 18px;
+            margin-top: 5px;
+        }
+
+        .info-panel {
+            background: linear-gradient(135deg, #FFF9E6, #FFF3CD);
+            border: 2px solid var(--warning);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .info-panel h4 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .info-panel p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .code-view {
+            background: #1E1E1E;
+            color: #D4D4D4;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .code-view::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .code-view::-webkit-scrollbar-track {
+            background: #2E2E2E;
+            border-radius: 10px;
+        }
+
+        .code-view::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 10px;
+        }
+
+        .code-line {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+
+        .code-line .keyword {
+            color: #C586C0;
+        }
+
+        .code-line .string {
+            color: #CE9178;
+        }
+
+        .code-line .number {
+            color: #B5CEA8;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            animation: scaleIn 0.3s;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .modal-content .stars-display {
+            font-size: 60px;
+            margin: 20px 0;
+        }
+
+        .character-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .character-option {
+            padding: 15px;
+            background: var(--light);
+            border: 3px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 32px;
+            transition: all 0.3s;
+        }
+
+        .character-option:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .character-option.selected {
+            border-color: var(--primary);
+            background: white;
+        }
+
+        @media (max-width: 1400px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">🚀</div>
+            <div class="logo-text">
+                <h1>CodeQuest</h1>
+                <p>Platform Pembelajaran Coding TIK Kelas 3</p>
+            </div>
+        </div>
+        <div class="level-info">
+            <div class="stat-box">
+                <div class="label">Level</div>
+                <div class="value" id="currentLevelDisplay">1</div>
+            </div>
+            <div class="stat-box">
+                <div class="label">Skor</div>
+                <div class="value" id="scoreDisplay">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="label">Bintang</div>
+                <div class="value" id="starsDisplay">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Panel Kiri: Blok Kode -->
+        <div class="panel">
+            <div class="section-title">
+                <span class="icon">🧩</span>
+                Blok Perintah
+            </div>
+
+            <div class="character-selector" style="margin-bottom: 20px;">
+                <div class="character-option selected" data-char="🤖" onclick="selectCharacter('🤖')">🤖</div>
+                <div class="character-option" data-char="🐱" onclick="selectCharacter('🐱')">🐱</div>
+                <div class="character-option" data-char="🐶" onclick="selectCharacter('🐶')">🐶</div>
+                <div class="character-option" data-char="🦊" onclick="selectCharacter('🦊')">🦊</div>
+            </div>
+
+            <div class="blocks-container">
+                <div class="block-category">
+                    <div class="category-label">⬆️ Gerakan</div>
+                    <div class="code-block movement" onclick="addBlock('Maju', 'forward')">
+                        <span class="block-icon">⬆️</span>
+                        <span>Maju</span>
+                    </div>
+                    <div class="code-block movement" onclick="addBlock('Mundur', 'backward')">
+                        <span class="block-icon">⬇️</span>
+                        <span>Mundur</span>
+                    </div>
+                    <div class="code-block movement" onclick="addBlock('Kiri', 'left')">
+                        <span class="block-icon">⬅️</span>
+                        <span>Belok Kiri</span>
+                    </div>
+                    <div class="code-block movement" onclick="addBlock('Kanan', 'right')">
+                        <span class="block-icon">➡️</span>
+                        <span>Belok Kanan</span>
+                    </div>
+                </div>
+
+                <div class="block-category">
+                    <div class="category-label">⚡ Aksi</div>
+                    <div class="code-block action" onclick="addBlock('Ambil Item', 'collect')">
+                        <span class="block-icon">✨</span>
+                        <span>Ambil Item</span>
+                    </div>
+                    <div class="code-block action" onclick="addBlock('Lompat', 'jump')">
+                        <span class="block-icon">🦘</span>
+                        <span>Lompat</span>
+                    </div>
+                </div>
+
+                <div class="block-category">
+                    <div class="category-label">🔄 Kontrol</div>
+                    <div class="code-block control" onclick="addBlock('Ulangi 2x', 'loop2')">
+                        <span class="block-icon">🔁</span>
+                        <span>Ulangi 2x</span>
+                    </div>
+                    <div class="code-block control" onclick="addBlock('Ulangi 3x', 'loop3')">
+                        <span class="block-icon">🔁</span>
+                        <span>Ulangi 3x</span>
+                    </div>
+                </div>
+
+                <div class="block-category">
+                    <div class="category-label">🤔 Kondisi</div>
+                    <div class="code-block condition" onclick="addBlock('Jika ada rintangan', 'if_obstacle')">
+                        <span class="block-icon">🚧</span>
+                        <span>Jika ada rintangan</span>
+                    </div>
+                    <div class="code-block condition" onclick="addBlock('Jika ada item', 'if_item')">
+                        <span class="block-icon">⭐</span>
+                        <span>Jika ada item</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Tengah: Game & Kontrol -->
+        <div class="panel">
+            <div class="section-title">
+                <span class="icon">🎮</span>
+                Arena Permainan
+            </div>
+
+            <div class="level-selector" id="levelSelector"></div>
+
+            <div class="game-canvas" id="gameCanvas"></div>
+
+            <div class="controls">
+                <button class="btn btn-primary" onclick="runProgram()">
+                    <span>▶️</span>
+                    <span>Jalankan Program</span>
+                </button>
+                <button class="btn btn-secondary" onclick="resetLevel()">
+                    <span>🔄</span>
+                    <span>Reset</span>
+                </button>
+                <button class="btn btn-danger" onclick="clearWorkspace()">
+                    <span>🗑️</span>
+                    <span>Hapus Semua</span>
+                </button>
+            </div>
+
+            <div class="info-panel">
+                <h4>📋 Misi Level <span id="missionLevel">1</span>:</h4>
+                <p id="missionText">Bawa robotmu ke bintang kuning! Hindari kotak hitam (rintangan).</p>
+            </div>
+        </div>
+
+        <!-- Panel Kanan: Workspace & Code -->
+        <div class="panel">
+            <div class="section-title">
+                <span class="icon">📝</span>
+                Program Kamu
+            </div>
+
+            <div class="workspace" id="workspace">
+                <div class="workspace-empty">
+                    Mulai coding dengan klik blok perintah! 🎯
+                </div>
+            </div>
+
+            <div class="section-title" style="margin-top: 25px;">
+                <span class="icon">💻</span>
+                Kode yang Dihasilkan
+            </div>
+
+            <div class="code-view" id="codeView">
+                <div class="code-line"><span class="keyword">function</span> myProgram() {</div>
+                <div class="code-line">  <span class="keyword">// Kode kamu akan muncul di sini</span></div>
+                <div class="code-line">}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <h2>🎉 Selamat!</h2>
+            <div class="stars-display" id="earnedStars">⭐⭐⭐</div>
+            <p style="font-size: 18px; margin-bottom: 20px;">Kamu berhasil menyelesaikan level ini!</p>
+            <button class="btn btn-primary" onclick="nextLevel()" style="width: 100%;">
+                Lanjut ke Level Berikutnya →
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let currentLevel = 1;
+        let score = 0;
+        let totalStars = 0;
+        let program = [];
+        let selectedCharacter = '🤖';
+        let playerPos = { x: 0, y: 0 };
+        let isRunning = false;
+
+        // Level Definitions
+        const levels = {
+            1: {
+                name: "Langkah Pertama",
+                description: "Bawa robotmu ke bintang kuning! Hindari kotak hitam (rintangan).",
+                grid: [
+                    ['P', '.', '.', '.', '.', '.', '.', '.'],
+                    ['.', '.', '.', '.', '.', '.', '.', '.'],
+                    ['.', '.', 'X', '.', '.', 'X', '.', '.'],
+                    ['.', '.', '.', '.', '.', '.', '.', '.'],
+                    ['.', '.', '.', 'X', '.', '.', '.', '.'],
+                    ['.', '.', '.', '.', '.', '.', '.', 'G'],
+                    ['.', '.', '.', '.', '.', '.', '.', '.'],
+                    ['.', '.', '.', '.', '.', '.', '.', '.']
+                ],
+                maxBlocks: 15
+            },
+            2: {
+                name: "Rintangan Sederhana",
+                description: "Gunakan perulangan untuk efisiensi! Kumpulkan item di jalan.",
+                grid: [
+                    ['P', '.', '.', '.', '.', '.', '.', '.'],
+                    ['.', 'X', 'X', 'X', '.', '.', '.', '.'],
+                    ['.', '.', '.', '.', '.', 'X', '.', '.'],
+                    ['.', '.', 'I', '.', '.', '.', '.', '.'],
+                    ['.', 'X', '.', '.', '.', 'X', '.', '.'],
+                    ['.', '.', '.', '.', '.', '.', '.', '.'],
+                    ['.', '.', '.', 'I', '.', '.', '.', '.'],
+                    ['.', '.', '.', '.', '.', '.', '.', 'G']
+                ],
+                maxBlocks: 12
+            },
+            3: {
+                name: "Labirin Misterius",
+                description: "Temukan jalan keluar dari labirin! Gunakan logika kondisional.",
+                grid: [
+                    ['P', 'X', '.', '.', '.', 'X', '.', '.'],
+                    ['.', 'X', '.', 'X', '.', 'X', '.', 'X'],
+                    ['.', '.', '.', 'X', '.', '.', '.', '.'],
+                    ['X', 'X', '.', 'X', 'X', 'X', 'X', '.'],
+                    ['.', '.', '.', '.', '.', '.', '.', '.'],
+                    ['.', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+                    ['.', '.', '.', '.', '.', '.', '.', '.'],
+                    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'G']
+                ],
+                maxBlocks: 20
+            },
+            4: {
+                name: "Tantangan Master",
+                description: "Level tersulit! Kumpulkan semua item dan capai tujuan!",
+                grid: [
+                    ['P', '.', 'X', '.', 'I', 'X', '.', '.'],
+                    ['.', '.', 'X', '.', '.', 'X', '.', 'X'],
+                    ['.', 'X', 'X', '.', '.', '.', '.', '.'],
+                    ['.', '.', '.', '.', 'X', 'X', 'X', '.'],
+                    ['X', 'X', '.', 'I', '.', '.', '.', '.'],
+                    ['.', '.', '.', 'X', 'X', '.', 'X', 'X'],
+                    ['.', 'X', '.', '.', 'I', '.', '.', '.'],
+                    ['.', '.', '.', 'X', '.', '.', '.', 'G']
+                ],
+                maxBlocks: 25
+            }
+        };
+
+        // Initialize
+        function init() {
+            loadLevel(currentLevel);
+            renderLevelSelector();
+            updateStats();
+        }
+
+        function loadLevel(levelNum) {
+            const level = levels[levelNum];
+            if (!level) return;
+
+            currentLevel = levelNum;
+            program = [];
+            
+            // Find player position
+            for (let y = 0; y < 8; y++) {
+                for (let x = 0; x < 8; x++) {
+                    if (level.grid[y][x] === 'P') {
+                        playerPos = { x, y };
+                    }
+                }
+            }
+
+            renderGrid();
+            updateWorkspace();
+            updateCodeView();
+            
+            document.getElementById('missionLevel').textContent = levelNum;
+            document.getElementById('missionText').textContent = level.description;
+            document.getElementById('currentLevelDisplay').textContent = levelNum;
+        }
+
+        function renderGrid() {
+            const canvas = document.getElementById('gameCanvas');
+            const level = levels[currentLevel];
+            canvas.innerHTML = '';
+
+            for (let y = 0; y < 8; y++) {
+                for (let x = 0; x < 8; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+
+                    const cellType = level.grid[y][x];
+                    
+                    if (x === playerPos.x && y === playerPos.y) {
+                        cell.classList.add('player');
+                        cell.textContent = selectedCharacter;
+                    } else if (cellType === 'G') {
+                        cell.classList.add('goal');
+                        cell.textContent = '⭐';
+                    } else if (cellType === 'X') {
+                        cell.classList.add('obstacle');
+                        cell.textContent = '🚧';
+                    } else if (cellType === 'I') {
+                        cell.textContent = '💎';
+                    }
+
+                    canvas.appendChild(cell);
+                }
+            }
+        }
+
+        function renderLevelSelector() {
+            const selector = document.getElementById('levelSelector');
+            selector.innerHTML = '';
+
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.createElement('div');
+                btn.className = 'level-btn';
+                if (i === currentLevel) btn.classList.add('active');
+                if (i > currentLevel) btn.classList.add('locked');
+                
+                btn.innerHTML = `
+                    <div>Level ${i}</div>
+                    <div class="stars">⭐⭐⭐</div>
+                `;
+                
+                if (i <= currentLevel) {
+                    btn.onclick = () => loadLevel(i);
+                }
+                
+                selector.appendChild(btn);
+            }
+        }
+
+        function selectCharacter(char) {
+            selectedCharacter = char;
+            document.querySelectorAll('.character-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            renderGrid();
+        }
+
+        function addBlock(text, type) {
+            program.push({ text, type });
+            updateWorkspace();
+            updateCodeView();
+        }
+
+        function updateWorkspace() {
+            const workspace = document.getElementById('workspace');
+            
+            if (program.length === 0) {
+                workspace.innerHTML = '<div class="workspace-empty">Mulai coding dengan klik blok perintah! 🎯</div>';
+                return;
+            }
+
+            workspace.innerHTML = '';
+            program.forEach((block, index) => {
+                const blockDiv = document.createElement('div');
+                blockDiv.className = 'workspace-block';
+                blockDiv.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <span class="number">${index + 1}.</span>
+                        <span class="text">${block.text}</span>
+                    </div>
+                    <button class="remove-btn" onclick="removeBlock(${index})">✖</button>
+                `;
+                workspace.appendChild(blockDiv);
+            });
+        }
+
+        function updateCodeView() {
+            const codeView = document.getElementById('codeView');
+            let code = '<div class="code-line"><span class="keyword">function</span> myProgram() {</div>';
+            
+            program.forEach((block, i) => {
+                let line = '';
+                switch(block.type) {
+                    case 'forward':
+                        line = '  robot.<span class="string">moveForward</span>();';
+                        break;
+                    case 'backward':
+                        line = '  robot.<span class="string">moveBackward</span>();';
+                        break;
+                    case 'left':
+                        line = '  robot.<span class="string">turnLeft</span>();';
+                        break;
+                    case 'right':
+                        line = '  robot.<span class="string">turnRight</span>();';
+                        break;
+                    case 'loop2':
+                        line = '  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i < <span class="number">2</span>; i++) {';
+                        break;
+                    case 'loop3':
+                        line = '  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i < <span class="number">3</span>; i++) {';
+                        break;
+                    case 'collect':
+                        line = '  robot.<span class="string">collectItem</span>();';
+                        break;
+                    case 'jump':
+                        line = '  robot.<span class="string">jump</span>();';
+                        break;
+                    default:
+                        line = `  <span class="keyword">// ${block.text}</span>`;
+                }
+                code += `<div class="code-line">${line}</div>`;
+            });
+            
+            code += '<div class="code-line">}</div>';
+            codeView.innerHTML = code;
+        }
+
+        function removeBlock(index) {
+            program.splice(index, 1);
+            updateWorkspace();
+            updateCodeView();
+        }
+
+        function clearWorkspace() {
+            program = [];
+            updateWorkspace();
+            updateCodeView();
+        }
+
+        function resetLevel() {
+            loadLevel(currentLevel);
+        }
+
+        async function runProgram() {
+            if (program.length === 0) {
+                alert('Tambahkan perintah terlebih dahulu! 🎯');
+                return;
+            }
+
+            if (isRunning) return;
+            isRunning = true;
+
+            // Reset position
+            const level = levels[currentLevel];
+            for (let y = 0; y < 8; y++) {
+                for (let x = 0; x < 8; x++) {
+                    if (level.grid[y][x] === 'P') {
+                        playerPos = { x, y };
+                    }
+                }
+            }
+
+            let commands = [...program];
+            let direction = 'right'; // default direction
+
+            // Process loops
+            let processedCommands = [];
+            let i = 0;
+            while (i < commands.length) {
+                const cmd = commands[i];
+                if (cmd.type === 'loop2' || cmd.type === 'loop3') {
+                    const loopCount = cmd.type === 'loop2' ? 2 : 3;
+                    const loopCommands = commands.slice(i + 1);
+                    for (let j = 0; j < loopCount; j++) {
+                        processedCommands.push(...loopCommands);
+                    }
+                    break;
+                } else {
+                    processedCommands.push(cmd);
+                }
+                i++;
+            }
+
+            // Execute commands
+            for (const cmd of processedCommands) {
+                await sleep(400);
+                
+                let newX = playerPos.x;
+                let newY = playerPos.y;
+
+                switch(cmd.type) {
+                    case 'forward':
+                        if (direction === 'right') newX++;
+                        else if (direction === 'left') newX--;
+                        else if (direction === 'down') newY++;
+                        else if (direction === 'up') newY--;
+                        break;
+                    case 'backward':
+                        if (direction === 'right') newX--;
+                        else if (direction === 'left') newX++;
+                        else if (direction === 'down') newY--;
+                        else if (direction === 'up') newY++;
+                        break;
+                    case 'left':
+                        if (direction === 'right') direction = 'up';
+                        else if (direction === 'up') direction = 'left';
+                        else if (direction === 'left') direction = 'down';
+                        else if (direction === 'down') direction = 'right';
+                        continue;
+                    case 'right':
+                        if (direction === 'right') direction = 'down';
+                        else if (direction === 'down') direction = 'left';
+                        else if (direction === 'left') direction = 'up';
+                        else if (direction === 'up') direction = 'right';
+                        continue;
+                    case 'jump':
+                        // Jump animation
+                        const cell = document.querySelector(`[data-x="${playerPos.x}"][data-y="${playerPos.y}"]`);
+                        cell.style.animation = 'jump 0.6s ease';
+                        await sleep(600);
+                        cell.style.animation = 'pulse 2s infinite';
+                        continue;
+                }
+
+                // Check boundaries
+                if (newX < 0 || newX > 7 || newY < 0 || newY > 7) {
+                    alert('Ups! Kamu keluar dari arena! 😅');
+                    isRunning = false;
+                    resetLevel();
+                    return;
+                }
+
+                // Check obstacles
+                if (level.grid[newY][newX] === 'X') {
+                    alert('Nabrak rintangan! Coba lagi! 💥');
+                    isRunning = false;
+                    resetLevel();
+                    return;
+                }
+
+                // Collect items
+                if (level.grid[newY][newX] === 'I') {
+                    level.grid[newY][newX] = '.';
+                    score += 50;
+                    updateStats();
+                }
+
+                playerPos = { x: newX, y: newY };
+                renderGrid();
+
+                // Check goal
+                if (level.grid[newY][newX] === 'G') {
+                    await sleep(500);
+                    levelComplete();
+                    isRunning = false;
+                    return;
+                }
+            }
+
+            isRunning = false;
+        }
+
+        function levelComplete() {
+            const level = levels[currentLevel];
+            const blocksUsed = program.length;
+            let stars = 3;
+            
+            if (blocksUsed > level.maxBlocks) stars = 2;
+            if (blocksUsed > level.maxBlocks * 1.5) stars = 1;
+
+            totalStars += stars;
+            score += stars * 100;
+            
+            updateStats();
+
+            const modal = document.getElementById('successModal');
+            const starsDisplay = document.getElementById('earnedStars');
+            starsDisplay.textContent = '⭐'.repeat(stars);
+            
+            modal.style.display = 'flex';
+        }
+
+        function nextLevel() {
+            document.getElementById('successModal').style.display = 'none';
+            
+            if (currentLevel < 4) {
+                loadLevel(currentLevel + 1);
+                renderLevelSelector();
+            } else {
+                alert('🎉 Selamat! Kamu telah menyelesaikan semua level! Kamu adalah Master Coder! 🏆');
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('starsDisplay').textContent = totalStars;
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
